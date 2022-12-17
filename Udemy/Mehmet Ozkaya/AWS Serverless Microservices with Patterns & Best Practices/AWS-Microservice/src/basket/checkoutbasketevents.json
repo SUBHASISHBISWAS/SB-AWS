@@ -1,0 +1,16 @@
+[
+  {
+    "Source": "com.sb.basket.checkoutbasket",
+    "Detail": "{ \"username\": \"SUBHASISH\", \"basket\": \"iPhone\" }",
+    "Resources": ["resource1", "resource2"],
+    "DetailType": "CheckoutBasket",
+    "EventBusName": "SBEventBus"
+  },
+  {
+    "Source": "com.sb.basket.checkoutbasket",
+    "Detail": "{ \"username\": \"SUBHASISH\", \"basket\": \"GalaxyPhone\" }",
+    "Resources": ["resource1", "resource2"],
+    "DetailType": "CheckoutBasket",
+    "EventBusName": "SBEventBus"
+  }
+]
