@@ -52,6 +52,9 @@ export class SBMicroservice extends Construct {
       environment: {
         PRIMARY_KEY: "userName",
         DYNAMODB_TABLE_NAME: basketTable.tableName,
+        EVENT_SOURCE: "com.sb.basket.checkoutbasket",
+        EVENT_DETAILTYPE: "CheckoutBasket",
+        EVENT_BUSNAME: "SBEventBus",
       },
       runtime: Runtime.NODEJS_18_X,
     };
