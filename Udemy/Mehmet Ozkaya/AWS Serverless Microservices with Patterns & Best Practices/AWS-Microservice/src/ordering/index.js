@@ -89,6 +89,7 @@ const getOrder = async (event) => {
 
   try {
     // expected request : xxx/order/swn?orderDate=timestamp
+
     const userName = event.pathParameters.userName;
     const orderDate = event.queryStringParameters.orderDate;
 
