@@ -9,8 +9,10 @@ exports.handler = async function (event) {
   console.log("request:", JSON.stringify(event, undefined, 2));
 
   // TODO - Catch and Process Async EventBridge Invocation and Sync API Gateway Invocation
-  const eventType = event["detail-type"];
-  if (eventType !== undefined) {
+  if (event.Records != null) {
+    // SQS Invocation
+    await sqsInvocation(event);
+  } else if (event["detail-type"] !== undefined) {
     // EventBridge Invocation
     await eventBridgeInvocation(event);
   } else {
@@ -19,33 +21,25 @@ exports.handler = async function (event) {
   }
 };
 
+const sqsInvocation = async (event) => {
+  console.log(`sqsInvocation function. event : "${event}"`);
+  for (const record of event.Records) {
+    console.log("Record: %j", record);
+    const checkoutEventRequest = JSON.parse(record.body);
+    await createOrder(checkoutEventRequest.detail)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => console.error(error));
+  }
+};
+
 const eventBridgeInvocation = async (event) => {
   console.log(`eventBridgeInvocation function. event : "${event}"`);
   // create order item into db
   await createOrder(event.detail);
 };
-const createOrder = async (basketCheckoutEvent) => {
-  try {
-    console.log(`createOrder function. event : "${basketCheckoutEvent}"`);
 
-    // set orderDate for SK of order dynamodb
-    const orderDate = new Date().toISOString();
-    basketCheckoutEvent.orderDate = orderDate;
-    console.log(basketCheckoutEvent);
-
-    const params = {
-      TableName: process.env.DYNAMODB_TABLE_NAME,
-      Item: marshall(basketCheckoutEvent || {}),
-    };
-
-    const createResult = await ddbClient.send(new PutItemCommand(params));
-    console.log(createResult);
-    return createResult;
-  } catch (e) {
-    console.error(e);
-    throw e;
-  }
-};
 const apiGatewayInvocation = async (event) => {
   // Implement this
 
@@ -81,6 +75,31 @@ const apiGatewayInvocation = async (event) => {
         errorStack: e.stack,
       }),
     };
+  }
+};
+
+const createOrder = async (basketCheckoutEvent) => {
+  try {
+    console.log(`createOrder function. event : "${basketCheckoutEvent}"`);
+
+    // set orderDate for SK of order dynamodb
+    const orderDate = new Date().toISOString();
+    basketCheckoutEvent.orderDate = orderDate;
+    console.log(basketCheckoutEvent);
+
+    const params = {
+      TableName: process.env.DYNAMODB_TABLE_NAME,
+      Item: marshall(basketCheckoutEvent || {}),
+    };
+
+    console.log(params);
+
+    const createResult = await ddbClient.send(new PutItemCommand(params));
+    console.log("Sb Result" + createResult);
+    return createResult;
+  } catch (e) {
+    console.error(e);
+    throw e;
   }
 };
 

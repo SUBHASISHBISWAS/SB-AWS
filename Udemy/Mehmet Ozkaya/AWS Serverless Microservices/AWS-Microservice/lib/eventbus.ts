@@ -1,11 +1,12 @@
 import { IFunction } from "aws-cdk-lib/aws-lambda";
 import { EventBus, Rule } from "aws-cdk-lib/aws-events";
-import { LambdaFunction } from "aws-cdk-lib/aws-events-targets";
+import { LambdaFunction, SqsQueue } from "aws-cdk-lib/aws-events-targets";
 import { Construct } from "constructs";
+import { IQueue } from "aws-cdk-lib/aws-sqs";
 
 interface SBEventBusProps {
   publisherFunction: IFunction;
-  targetFunction: IFunction;
+  targetQueue: IQueue;
 }
 export class SBEventBus extends Construct {
   constructor(scope: Construct, id: string, props: SBEventBusProps) {
@@ -26,7 +27,9 @@ export class SBEventBus extends Construct {
       ruleName: "CheckoutBasketRule",
     });
     // need to pass target to Ordering Lambda service
-    chekoutBasketRule.addTarget(new LambdaFunction(props.targetFunction));
+    //chekoutBasketRule.addTarget(new LambdaFunction(props.targetFunction));
+
+    chekoutBasketRule.addTarget(new SqsQueue(props.targetQueue));
 
     bus.grantPutEventsTo(props.publisherFunction);
     // AccessDeniedException - is not authorized to perform: events:PutEvents

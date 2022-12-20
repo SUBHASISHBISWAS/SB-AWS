@@ -15,6 +15,7 @@ import { SBApiGateway } from "./apigateway";
 import { SBDatabase } from "./database";
 import { SBEventBus } from "./eventbus";
 import { SBMicroservice } from "./microservice";
+import { SBQueue } from "./queue";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class AwsMicroserviceStack extends cdk.Stack {
@@ -35,9 +36,13 @@ export class AwsMicroserviceStack extends cdk.Stack {
       orderingMicroservice: microservices.orderingMicroservice,
     });
 
+    const queue = new SBQueue(this, "Queue", {
+      consumer: microservices.orderingMicroservice,
+    });
+
     const eventBus = new SBEventBus(this, "EventBus", {
       publisherFunction: microservices.basketMicroservice,
-      targetFunction: microservices.orderingMicroservice,
+      targetQueue: queue.orderQueue,
     });
   }
 }

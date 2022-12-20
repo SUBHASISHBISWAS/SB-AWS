@@ -60,17 +60,17 @@ export class SBApiGateway extends Construct {
       proxy: false,
     });
 
-    const product = apigw.root.addResource("basket");
-    product.addMethod("GET");
-    product.addMethod("POST");
+    const basket = apigw.root.addResource("basket");
+    basket.addMethod("GET");
+    basket.addMethod("POST");
 
-    const singleBasket = product.addResource("{userName}"); //basket/{userName}
+    const singleBasket = basket.addResource("{userName}"); //basket/{userName}
     singleBasket.addMethod("GET"); // GET   /basket/{userName}
     singleBasket.addMethod("DELETE"); // DELETE /basket/{userName}
 
-    const basketCheckout = product.addResource("checkout"); //basket/{userName}
+    const basketCheckout = basket.addResource("checkout"); //basket/{userName}
     basketCheckout.addMethod("POST"); // GET   /basket/checkout
-    // expected request payload : { userName : swn }
+    // expected request payload : { userName : SUBHASISH }
   }
 
   private createOrderApi(orderingMicroservice: IFunction) {
@@ -87,11 +87,11 @@ export class SBApiGateway extends Construct {
       proxy: false,
     });
 
-    const product = apigw.root.addResource("order");
-    product.addMethod("GET"); //GET /order
+    const order = apigw.root.addResource("order");
+    order.addMethod("GET"); //GET /order
 
-    const singleProduct = product.addResource("{userName}"); //product/{id}
-    singleProduct.addMethod("GET"); //GET / order / { userName };
+    const singleOrder = order.addResource("{userName}"); //product/{id}
+    singleOrder.addMethod("GET"); //GET / order / { userName };
     // expected request : xxx/order/swn?orderDate=timestamp
     // ordering ms grap input and query parameters and filter to dynamo db
   }
